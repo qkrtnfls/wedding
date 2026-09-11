@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Wedding Day</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         청첩장 제작 화면
+    ========================== -->
+    <section id="setup-page" class="page">
+
+        <div class="setup-content">
+
+            <p class="setup-subtitle">
+                SPECIAL INVITATION
+            </p>
+
+            <h1>
+                우리만의 청첩장
+            </h1>
+
+            <p class="setup-description">
+                두 사람의 정보를 입력해주세요.
+            </p>
+
+
+            <!-- 신랑 이름 -->
+            <div class="input-area">
+
+                <label for="groom">
+                    신랑 이름
+                </label>
+
+                <input
+                    type="text"
+                    id="groom"
+                    placeholder="신랑 이름을 입력해주세요"
+                    maxlength="10"
+                >
+
+
+                <!-- 신부 이름 -->
+                <label for="bride">
+                    신부 이름
+                </label>
+
+                <input
+                    type="text"
+                    id="bride"
+                    placeholder="신부 이름을 입력해주세요"
+                    maxlength="10"
+                >
+
+            </div>
+
+
+            <!-- 사진 선택 -->
+            <div class="photo-area">
+
+              <!-- 결혼 날짜 / 시간 -->
+<div class="date-time-area">
+
+    <label for="wedding-date">
+        결혼 날짜
+    </label>
+
+    <input
+        type="date"
+        id="wedding-date"
+    >
+
+
+    <label for="wedding-time">
+        예식 시간
+    </label>
+
+    <input
+        type="time"
+        id="wedding-time"
+        value="12:00"
+    >
+
+</div>
+
+                <!-- 신랑 사진 -->
+                <div class="photo-box">
+
+                  <label for="groom-photo" class="photo-button">
+                     <img
+                      id="groom-preview"
+                      class="photo-preview"
+                      alt="신랑 사진"
+                      >
+
+                <span class="photo-plus">＋</span>
+              <p>신랑 사진</p>
+              </label>
+
+          <input
+              type="file"
+              id="groom-photo"
+              accept="image/*"
+          >
+
+          </div>
+
+
+                <!-- 신부 사진 -->
+                <div class="photo-box">
+
+                <label for="bride-photo" class="photo-button">
+                    <img
+                        id="bride-preview"
+                        class="photo-preview"
+                        alt="신부 사진"
+                    >
+
+                    <span class="photo-plus">＋</span>
+                    <p>신부 사진</p>
+                </label>
+
+                <input
+                    type="file"
+                    id="bride-photo"
+                    accept="image/*"
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- 청첩장 만들기 -->
+            <button id="make-invitation">
+                청첩장 만들기
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         실제 청첩장
+    ========================== -->
+
+    <main id="invitation" class="hidden">
+
+      <!-- 배경음악 버튼 -->
+
+      <button id="music-button" type="button">
+          ♫
+      </button>
+
+      <audio id="wedding-music" loop>
+          <source src="Boyfriend.mp3" type="audio/mpeg">
+      </audio>
+
+        <!-- 첫 번째 화면 -->
+        <section class="page main-page">
+
+            <div class="main-content">
+
+                <p class="small-text">
+                    WE ARE GETTING MARRIED
+                </p>
+
+                <h1 id="typing-text"></h1>
+
+
+                <!-- 신랑 / 신부 사진 -->
+                <div class="couple-photos">
+
+                    <img
+                        id="groom-photo-result"
+                        alt="신랑"
+                    >
+
+                    <span class="photo-heart">
+                        ♥
+                    </span>
+
+                    <img
+                        id="bride-photo-result"
+                        alt="신부"
+                    >
+
+                </div>
+
+
+                <!-- 이름 -->
+                <p class="couple-name">
+
+                    <span id="groom-name"></span>
+
+                    <span class="heart">
+                        ♥
+                    </span>
+
+                    <span id="bride-name"></span>
+
+                </p>
+
+
+                <p class="date" id="wedding-date-result">
+                </p>
+
+                <p class="venue">
+                    902호
+                </p>
+
+                <div class="scroll-guide">
+                    SCROLL
+                    <span>↓</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- 두 번째 화면 -->
+        <section class="page date-page">
+
+            <div class="content">
+
+                <p class="subtitle">
+                    OUR SPECIAL DAY
+                </p>
+
+                <h2 id="wedding-date-result-2">
+            </h2>
+
+              <p class="day" id="wedding-time-result">
+              </p>
+
+                <p class="message">
+                    우리의 특별한 날에<br>
+                    소중한 분들을 초대합니다.<br>
+                    0302-1121
+                </p>
+
+                <div class="map-section">
+    <p class="map-title">오시는 길</p>
+
+    <a href="https://naver.me/5l7WiBvT" target="_blank" class="map-button">
+        ♥902호♥
+    </a>
+</div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- 세 번째 화면 -->
+        <section class="page people-page">
+
+            <div class="content">
+
+                <p class="subtitle">
+                    THE COUPLE
+                </p>
+
+                <h2>
+
+                    <span id="groom-name-2"></span>
+
+                    &
+
+                    <span id="bride-name-2"></span>
+
+                </h2>
+
+                <p class="message">
+                    두 사람이 새로운 시작을 합니다.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- 네 번째 화면 -->
+        <section class="page message-page">
+
+            <div class="content">
+
+                <p class="subtitle">
+                    OUR STORY
+                </p>
+
+                <p class="big-message">
+                    우리의 이야기가<br>
+                    새로운 시작을 맞이합니다.
+                </p>
+
+                <p>
+                    함께해 주신다면<br>
+                    더없이 행복하겠습니다.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- 마지막 화면 -->
+        <section class="page ending-page">
+
+            <div class="content">
+
+                <h2>
+                    THANK YOU
+                </h2>
+
+                <p>
+                    우리의 특별한 날을<br>
+                    함께해 주세요.
+                </p>
+
+                <span class="heart">
+                    ♥
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
+```
