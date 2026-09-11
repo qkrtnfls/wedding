@@ -12,92 +12,130 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
+
+
 // =========================
 // 요소 가져오기
 // =========================
 
-const groomInput = document.getElementById("groom");
-const brideInput = document.getElementById("bride");
+const groomInput =
+    document.getElementById("groom");
 
-const groomPhotoInput = document.getElementById("groom-photo");
-const bridePhotoInput = document.getElementById("bride-photo");
+const brideInput =
+    document.getElementById("bride");
 
-const groomPreview = document.getElementById("groom-preview");
-const bridePreview = document.getElementById("bride-preview");
+const groomPhotoInput =
+    document.getElementById("groom-photo");
 
-const weddingDateInput = document.getElementById("wedding-date");
-const weddingTimeInput = document.getElementById("wedding-time");
+const bridePhotoInput =
+    document.getElementById("bride-photo");
 
-const makeButton = document.getElementById("make-invitation");
+const groomPreview =
+    document.getElementById("groom-preview");
 
-const setupPage = document.getElementById("setup-page");
-const invitation = document.getElementById("invitation");
+const bridePreview =
+    document.getElementById("bride-preview");
+
+const weddingDateInput =
+    document.getElementById("wedding-date");
+
+const weddingTimeInput =
+    document.getElementById("wedding-time");
+
+const makeButton =
+    document.getElementById("make-invitation");
+
+const setupPage =
+    document.getElementById("setup-page");
+
+const invitation =
+    document.getElementById("invitation");
+
+const specialVideo =
+    document.getElementById("special-couple-video");
 
 
 // =========================
-// 신랑 사진 미리보기
+// 현재 청첩장 ID
 // =========================
 
-groomPhotoInput.addEventListener("change", function () {
+let currentInvitationId = null;
 
-    const file = this.files[0];
 
-    if (file) {
+// =========================
+// 사진 미리보기
+// =========================
 
-        const imageURL = URL.createObjectURL(file);
+groomPhotoInput.addEventListener(
+    "change",
+    function () {
 
-        groomPreview.src = imageURL;
-        groomPreview.style.display = "block";
+        const file = this.files[0];
+
+        if (file) {
+
+            groomPreview.src =
+                URL.createObjectURL(file);
+
+            groomPreview.style.display =
+                "block";
+        }
+
     }
+);
 
-});
 
+bridePhotoInput.addEventListener(
+    "change",
+    function () {
 
-// =========================
-// 신부 사진 미리보기
-// =========================
+        const file = this.files[0];
 
-bridePhotoInput.addEventListener("change", function () {
+        if (file) {
 
-    const file = this.files[0];
+            bridePreview.src =
+                URL.createObjectURL(file);
 
-    if (file) {
+            bridePreview.style.display =
+                "block";
+        }
 
-        const imageURL = URL.createObjectURL(file);
-
-        bridePreview.src = imageURL;
-        bridePreview.style.display = "block";
     }
-
-});
+);
 
 
 // =========================
-// 날짜 표시 형식 변경
-// 2026-10-24
-// ↓
-// 2026. 10. 24
+// 날짜 형식
 // =========================
 
 function formatDate(dateValue) {
 
-    const date = new Date(dateValue);
+    const date =
+        new Date(dateValue);
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
 
     return `${year}. ${month}. ${day}`;
 }
 
 
 // =========================
-// 요일 구하기
+// 요일
 // =========================
 
 function getDayName(dateValue) {
 
-    const date = new Date(dateValue);
+    const date =
+        new Date(dateValue);
 
     const days = [
         "SUNDAY",
@@ -114,23 +152,28 @@ function getDayName(dateValue) {
 
 
 // =========================
-// 시간 표시 형식 변경
-// 12:00
-// ↓
-// PM 12:00
+// 시간 형식
 // =========================
 
 function formatTime(timeValue) {
 
-    const [hour, minute] = timeValue.split(":");
+    const [hour, minute] =
+        timeValue.split(":");
 
-    let hourNumber = Number(hour);
+    let hourNumber =
+        Number(hour);
 
-    const ampm = hourNumber >= 12 ? "PM" : "AM";
+    const ampm =
+        hourNumber >= 12
+            ? "PM"
+            : "AM";
 
     if (hourNumber === 0) {
+
         hourNumber = 12;
+
     } else if (hourNumber > 12) {
+
         hourNumber -= 12;
     }
 
@@ -139,141 +182,444 @@ function formatTime(timeValue) {
 
 
 // =========================
+// 사진 업로드
+// =========================
+
+async function uploadPhoto(
+    file,
+    invitationId,
+    type
+) {
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+    const filePath =
+        `${invitationId}/${type}.${extension}`;
+
+
+    const { error } =
+        await supabaseClient
+            .storage
+            .from("wedding-photos")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: true,
+                    contentType: file.type
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "사진 업로드 오류:",
+            error
+        );
+
+        throw error;
+    }
+
+
+    const { data } =
+        supabaseClient
+            .storage
+            .from("wedding-photos")
+            .getPublicUrl(filePath);
+
+
+    return data.publicUrl;
+}
+
+
+// =========================
 // 청첩장 만들기
 // =========================
 
-makeButton.addEventListener("click", function () {
+makeButton.addEventListener(
+    "click",
+    async function (event) {
 
-    const groomName = groomInput.value.trim();
-    const brideName = brideInput.value.trim();
+        event.preventDefault();
 
-    const groomPhoto = groomPhotoInput.files[0];
-    const bridePhoto = bridePhotoInput.files[0];
+        const groomName =
+            groomInput.value.trim();
 
-    const weddingDate = weddingDateInput.value;
-    const weddingTime = weddingTimeInput.value;
+        const brideName =
+            brideInput.value.trim();
+
+        const groomPhoto =
+            groomPhotoInput.files[0];
+
+        const bridePhoto =
+            bridePhotoInput.files[0];
+
+        const weddingDate =
+            weddingDateInput.value;
+
+        const weddingTime =
+            weddingTimeInput.value;
 
 
-    // =========================
-    // 이름 확인
-    // =========================
+        // -------------------------
+        // 입력값 확인
+        // -------------------------
 
-    if (!groomName || !brideName) {
+        if (!groomName || !brideName) {
 
-        alert("신랑과 신부 이름을 모두 입력해주세요!");
+            alert(
+                "신랑과 신부 이름을 모두 입력해주세요!"
+            );
+
+            return;
+        }
+
+
+        if (!weddingDate) {
+
+            alert(
+                "결혼 날짜를 선택해주세요!"
+            );
+
+            return;
+        }
+
+
+        if (!weddingTime) {
+
+            alert(
+                "예식 시간을 선택해주세요!"
+            );
+
+            return;
+        }
+
+
+        if (!groomPhoto || !bridePhoto) {
+
+            alert(
+                "신랑과 신부 사진을 모두 선택해주세요!"
+            );
+
+            return;
+        }
+
+
+        makeButton.disabled = true;
+
+        makeButton.textContent =
+            "청첩장 만드는 중...";
+
+
+        try {
+
+            // -------------------------
+            // 새로운 청첩장 ID 생성
+            // -------------------------
+
+            const invitationId =
+                crypto.randomUUID();
+
+
+            // -------------------------
+            // 사진 업로드
+            // -------------------------
+
+            const groomPhotoUrl =
+                await uploadPhoto(
+                    groomPhoto,
+                    invitationId,
+                    "groom"
+                );
+
+
+            const bridePhotoUrl =
+                await uploadPhoto(
+                    bridePhoto,
+                    invitationId,
+                    "bride"
+                );
+
+
+            // -------------------------
+            // Supabase에 저장
+            // -------------------------
+
+            const { data, error } =
+                await supabaseClient
+                    .from("invitations")
+                    .insert({
+
+                        id: invitationId,
+
+                        groom_name:
+                            groomName,
+
+                        bride_name:
+                            brideName,
+
+                        wedding_date:
+                            weddingDate,
+
+                        wedding_time:
+                            weddingTime,
+
+                        groom_photo_url:
+                            groomPhotoUrl,
+
+                        bride_photo_url:
+                            bridePhotoUrl
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "청첩장 저장 오류:",
+                    error
+                );
+
+                throw error;
+            }
+
+
+            // 현재 청첩장 ID 저장
+
+            currentInvitationId =
+                data.id;
+
+
+            // -------------------------
+            // ⭐ 공유용 주소 생성
+            // -------------------------
+
+            const invitationUrl =
+                `${window.location.origin}/?id=${data.id}`;
+
+
+            console.log(
+                "청첩장 공유 주소:",
+                invitationUrl
+            );
+
+
+            // -------------------------
+            // ⭐ 주소로 이동
+            // -------------------------
+
+            window.location.href =
+                invitationUrl;
+
+
+        } catch (error) {
+
+            console.error(
+                "청첩장 제작 오류:",
+                error
+            );
+
+
+            alert(
+                "청첩장을 만드는 중 오류가 발생했어요.\n\n" +
+                error.message
+            );
+
+
+        } finally {
+
+            makeButton.disabled = false;
+
+            makeButton.textContent =
+                "청첩장 만들기";
+        }
+
+    }
+);
+
+
+// =========================
+// 청첩장 불러오기
+// =========================
+
+async function loadInvitation(
+    invitationId
+) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("invitations")
+            .select("*")
+            .eq("id", invitationId)
+            .single();
+
+
+    if (error) {
+
+        console.error(
+            "청첩장 불러오기 오류:",
+            error
+        );
+
+        alert(
+            "청첩장을 찾을 수 없어요."
+        );
 
         return;
     }
 
 
-    // =========================
-    // 날짜 확인
-    // =========================
-
-    if (!weddingDate) {
-
-        alert("결혼 날짜를 선택해주세요!");
-
-        return;
-    }
+    currentInvitationId =
+        data.id;
 
 
-    // =========================
-    // 시간 확인
-    // =========================
-
-    if (!weddingTime) {
-
-        alert("예식 시간을 선택해주세요!");
-
-        return;
-    }
-
-
-    // =========================
-    // 사진 확인
-    // =========================
-
-    if (!groomPhoto || !bridePhoto) {
-
-        alert("신랑과 신부 사진을 모두 선택해주세요!");
-
-        return;
-    }
-
-
-    // =========================
-    // 이름 넣기
-    // =========================
-
-    document.getElementById("groom-name").textContent =
-        groomName;
-
-    document.getElementById("bride-name").textContent =
-        brideName;
-
-    document.getElementById("groom-name-2").textContent =
-        groomName;
-
-    document.getElementById("bride-name-2").textContent =
-        brideName;
-        
-const specialVideo =
-    document.getElementById("special-couple-video");
-
-if (groomName === "박원빈" && brideName === "이소희") {
-    specialVideo.style.display = "block";
-} else {
-    specialVideo.style.display = "none";
+    showInvitation(data);
 }
 
-    // =========================
-    // 날짜 넣기
-    // =========================
 
-    const formattedDate = formatDate(weddingDate);
+// =========================
+// 청첩장 화면 표시
+// =========================
 
-    document.getElementById("wedding-date-result").textContent =
+function showInvitation(data) {
+
+    const groomName =
+        data.groom_name;
+
+    const brideName =
+        data.bride_name;
+
+    const weddingDate =
+        data.wedding_date;
+
+    const weddingTime =
+        data.wedding_time;
+
+
+    // -------------------------
+    // 이름
+    // -------------------------
+
+    document.getElementById(
+        "groom-name"
+    ).textContent =
+        groomName;
+
+
+    document.getElementById(
+        "bride-name"
+    ).textContent =
+        brideName;
+
+
+    document.getElementById(
+        "groom-name-2"
+    ).textContent =
+        groomName;
+
+
+    document.getElementById(
+        "bride-name-2"
+    ).textContent =
+        brideName;
+
+
+    // -------------------------
+    // 특별 영상
+    // -------------------------
+
+    if (
+        groomName === "박원빈" &&
+        brideName === "이소희"
+    ) {
+
+        specialVideo.style.display =
+            "block";
+
+    } else {
+
+        specialVideo.style.display =
+            "none";
+    }
+
+
+    // -------------------------
+    // 날짜
+    // -------------------------
+
+    const formattedDate =
+        formatDate(weddingDate);
+
+
+    document.getElementById(
+        "wedding-date-result"
+    ).textContent =
         formattedDate;
 
-    document.getElementById("wedding-date-result-2").textContent =
+
+    document.getElementById(
+        "wedding-date-result-2"
+    ).textContent =
         formattedDate;
 
 
-    // =========================
-    // 요일 + 시간 넣기
-    // =========================
+    // -------------------------
+    // 요일 + 시간
+    // -------------------------
 
-    const dayName = getDayName(weddingDate);
-    const formattedTime = formatTime(weddingTime);
+    const dayName =
+        getDayName(weddingDate);
 
-    document.getElementById("wedding-time-result").textContent =
+    const formattedTime =
+        formatTime(weddingTime);
+
+
+    document.getElementById(
+        "wedding-time-result"
+    ).textContent =
         `${dayName} ${formattedTime}`;
 
 
-    // =========================
-    // 사진 넣기
-    // =========================
+    // -------------------------
+    // 사진
+    // -------------------------
 
-    document.getElementById("groom-photo-result").src =
-        URL.createObjectURL(groomPhoto);
-
-    document.getElementById("bride-photo-result").src =
-        URL.createObjectURL(bridePhoto);
-
-
-    // =========================
-    // 제작 화면 숨기기
-    // =========================
-
-    setupPage.classList.add("hidden");
-
-    invitation.classList.remove("hidden");
+    document.getElementById(
+        "groom-photo-result"
+    ).src =
+        data.groom_photo_url;
 
 
-    // =========================
-    // 첫 화면으로 이동
-    // =========================
+    document.getElementById(
+        "bride-photo-result"
+    ).src =
+        data.bride_photo_url;
+
+
+    // -------------------------
+    // 화면 전환
+    // -------------------------
+
+    setupPage.classList.add(
+        "hidden"
+    );
+
+    invitation.classList.remove(
+        "hidden"
+    );
+
+
+    // -------------------------
+    // 맨 위로
+    // -------------------------
 
     window.scrollTo({
         top: 0,
@@ -281,13 +627,19 @@ if (groomName === "박원빈" && brideName === "이소희") {
     });
 
 
-    // =========================
-    // 타이핑 애니메이션
-    // =========================
+    // -------------------------
+    // 타이핑
+    // -------------------------
 
     startTyping();
 
-});
+
+    // -------------------------
+    // 방명록
+    // -------------------------
+
+    loadGuestbook(data.id);
+}
 
 
 // =========================
@@ -296,186 +648,432 @@ if (groomName === "박원빈" && brideName === "이소희") {
 
 function startTyping() {
 
-    const text = "OUR WEDDING DAY";
+    const text =
+        "OUR WEDDING DAY";
 
     const typingText =
-        document.getElementById("typing-text");
+        document.getElementById(
+            "typing-text"
+        );
 
-    typingText.textContent = "";
+    typingText.textContent =
+        "";
 
     let index = 0;
 
-    const typing = setInterval(function () {
 
-        typingText.textContent += text[index];
+    const typing =
+        setInterval(
+            function () {
 
-        index++;
+                typingText.textContent +=
+                    text[index];
 
-        if (index >= text.length) {
+                index++;
 
-            clearInterval(typing);
 
-        }
+                if (
+                    index >= text.length
+                ) {
 
-    }, 120);
+                    clearInterval(
+                        typing
+                    );
+                }
 
+            },
+            120
+        );
 }
+
+
 // =========================
 // 배경음악
 // =========================
 
-const musicButton = document.getElementById("music-button");
-const weddingMusic = document.getElementById("wedding-music");
+const musicButton =
+    document.getElementById(
+        "music-button"
+    );
+
+const weddingMusic =
+    document.getElementById(
+        "wedding-music"
+    );
 
 let musicPlaying = false;
 
-musicButton.addEventListener("click", function () {
 
-    if (!musicPlaying) {
+musicButton.addEventListener(
+    "click",
+    function () {
 
-        weddingMusic.play();
+        if (!musicPlaying) {
 
-        musicButton.textContent = "🔊";
+            weddingMusic.play();
 
-        musicPlaying = true;
+            musicButton.textContent =
+                "🔊";
 
-    } else {
+            musicPlaying = true;
 
-        weddingMusic.pause();
+        } else {
 
-        musicButton.textContent = "♫";
+            weddingMusic.pause();
 
-        musicPlaying = false;
+            musicButton.textContent =
+                "♫";
+
+            musicPlaying = false;
+        }
 
     }
+);
 
-});
+
 // =========================
 // 방명록
 // =========================
 
 const guestNameInput =
-    document.getElementById("guest-name");
+    document.getElementById(
+        "guest-name"
+    );
 
 const guestMessageInput =
-    document.getElementById("guest-message");
+    document.getElementById(
+        "guest-message"
+    );
 
 const guestbookSubmit =
-    document.getElementById("guestbook-submit");
+    document.getElementById(
+        "guestbook-submit"
+    );
 
 const guestbookList =
-    document.getElementById("guestbook-list");
+    document.getElementById(
+        "guestbook-list"
+    );
 
 
+// =========================
 // 방명록 불러오기
-async function loadGuestbook() {
+// =========================
 
-    const { data, error } = await supabaseClient
-        .from("guestbook")
-        .select("id, name, message, created_at")
-        .order("created_at", { ascending: false });
+async function loadGuestbook(
+    invitationId
+) {
+
+    if (!invitationId) {
+        return;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("guestbook")
+            .select(
+                "id, name, message, created_at"
+            )
+            .eq(
+                "invitation_id",
+                invitationId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
 
     if (error) {
 
-        console.error("방명록 불러오기 오류:", error);
+        console.error(
+            "방명록 불러오기 오류:",
+            error
+        );
 
         return;
     }
 
-    guestbookList.innerHTML = "";
 
-    data.forEach(function (item) {
-
-        const article =
-            document.createElement("article");
-
-        article.className = "guestbook-item";
+    guestbookList.innerHTML =
+        "";
 
 
-        const name =
-            document.createElement("strong");
+    data.forEach(
+        function (item) {
 
-        name.className = "guest-name";
-        name.textContent = item.name;
+            const article =
+                document.createElement(
+                    "article"
+                );
 
-
-        const date =
-            document.createElement("span");
-
-        date.className = "guest-date";
-
-        date.textContent =
-            new Date(item.created_at)
-                .toLocaleDateString("ko-KR");
+            article.className =
+                "guestbook-item";
 
 
-        const message =
-            document.createElement("p");
+            const name =
+                document.createElement(
+                    "strong"
+                );
 
-        message.className = "guest-message";
-        message.textContent = item.message;
+            name.className =
+                "guest-name";
+
+            name.textContent =
+                item.name;
 
 
-        article.appendChild(name);
-        article.appendChild(date);
-        article.appendChild(message);
+            const date =
+                document.createElement(
+                    "span"
+                );
 
-        guestbookList.appendChild(article);
+            date.className =
+                "guest-date";
 
-    });
+            date.textContent =
+                new Date(
+                    item.created_at
+                ).toLocaleDateString(
+                    "ko-KR"
+                );
 
+
+            const message =
+                document.createElement(
+                    "p"
+                );
+
+            message.className =
+                "guest-message";
+
+            message.textContent =
+                item.message;
+
+
+            article.appendChild(
+                name
+            );
+
+            article.appendChild(
+                date
+            );
+
+            article.appendChild(
+                message
+            );
+
+
+            guestbookList.appendChild(
+                article
+            );
+
+        }
+    );
 }
 
 
+// =========================
 // 방명록 등록
-guestbookSubmit.addEventListener("click", async function () {
+// =========================
 
-    const name =
-        guestNameInput.value.trim();
+guestbookSubmit.addEventListener(
+    "click",
+    async function () {
 
-    const message =
-        guestMessageInput.value.trim();
+        const name =
+            guestNameInput.value.trim();
+
+        const message =
+            guestMessageInput.value.trim();
 
 
-    if (!name || !message) {
+        if (!name || !message) {
 
-        alert("이름과 메시지를 모두 입력해주세요!");
+            alert(
+                "이름과 메시지를 모두 입력해주세요!"
+            );
 
-        return;
+            return;
+        }
+
+
+        if (!currentInvitationId) {
+
+            alert(
+                "청첩장 정보를 찾을 수 없어요."
+            );
+
+            return;
+        }
+
+
+        guestbookSubmit.disabled =
+            true;
+
+
+        const { error } =
+            await supabaseClient
+                .from("guestbook")
+                .insert({
+
+                    name:
+                        name,
+
+                    message:
+                        message,
+
+                    invitation_id:
+                        currentInvitationId
+
+                });
+
+
+        if (error) {
+
+            console.error(
+                "방명록 등록 오류:",
+                error
+            );
+
+
+            alert(
+                "방명록 등록에 실패했어요."
+            );
+
+        } else {
+
+            guestNameInput.value =
+                "";
+
+            guestMessageInput.value =
+                "";
+
+
+            await loadGuestbook(
+                currentInvitationId
+            );
+        }
+
+
+        guestbookSubmit.disabled =
+            false;
+
     }
+);
 
 
-    guestbookSubmit.disabled = true;
+// =========================
+// 청첩장 공유
+// =========================
+
+const shareButton =
+    document.getElementById(
+        "share-button"
+    );
 
 
-    const { error } = await supabaseClient
-        .from("guestbook")
-        .insert({
-            name: name,
-            message: message
-        });
+shareButton.addEventListener(
+    "click",
+    async function () {
+
+        const invitationUrl =
+            window.location.href;
 
 
-    if (error) {
+        // 모바일 / 지원 브라우저
+        if (navigator.share) {
 
-        console.error("방명록 등록 오류:", error);
+            try {
 
-        alert("방명록 등록에 실패했어요.");
+                await navigator.share({
 
-    } else {
+                    title:
+                        "우리의 결혼식에 초대합니다",
 
-        guestNameInput.value = "";
-        guestMessageInput.value = "";
+                    text:
+                        "저희 결혼식에 초대합니다 💍",
+                    url:
+                        invitationUrl
 
-        await loadGuestbook();
+                });
+
+            } catch (error) {
+
+                // 사용자가 공유창을 닫은 경우
+                if (
+                    error.name !==
+                    "AbortError"
+                ) {
+
+                    console.error(
+                        "공유 오류:",
+                        error
+                    );
+                }
+            }
+
+
+        // 공유 기능을 지원하지 않는 경우
+        } else {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    invitationUrl
+                );
+
+
+                alert(
+                    "청첩장 링크가 복사되었습니다!"
+                );
+
+
+            } catch (error) {
+
+                prompt(
+                    "아래 링크를 복사해주세요.",
+                    invitationUrl
+                );
+            }
+        }
 
     }
+);
 
 
-    guestbookSubmit.disabled = false;
+// =========================
+// 페이지 처음 열었을 때
+// =========================
 
-});
+async function initializePage() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
 
 
-// 처음 페이지 열었을 때 방명록 불러오기
-loadGuestbook();
+    const invitationId =
+        params.get("id");
+
+
+    console.log(
+        "현재 청첩장 ID:",
+        invitationId
+    );
+
+
+    if (invitationId) {
+
+        await loadInvitation(
+            invitationId
+        );
+    }
+}
+
+
+initializePage();
