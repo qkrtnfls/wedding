@@ -12,8 +12,6 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
-
-
 // =========================
 // 요소 가져오기
 // =========================
@@ -156,7 +154,9 @@ makeButton.addEventListener("click", function () {
     const weddingTime = weddingTimeInput.value;
 
 
+    // =========================
     // 이름 확인
+    // =========================
 
     if (!groomName || !brideName) {
 
@@ -166,7 +166,9 @@ makeButton.addEventListener("click", function () {
     }
 
 
+    // =========================
     // 날짜 확인
+    // =========================
 
     if (!weddingDate) {
 
@@ -176,7 +178,9 @@ makeButton.addEventListener("click", function () {
     }
 
 
+    // =========================
     // 시간 확인
+    // =========================
 
     if (!weddingTime) {
 
@@ -186,7 +190,9 @@ makeButton.addEventListener("click", function () {
     }
 
 
+    // =========================
     // 사진 확인
+    // =========================
 
     if (!groomPhoto || !bridePhoto) {
 
@@ -196,7 +202,9 @@ makeButton.addEventListener("click", function () {
     }
 
 
+    // =========================
     // 이름 넣기
+    // =========================
 
     document.getElementById("groom-name").textContent =
         groomName;
@@ -209,9 +217,17 @@ makeButton.addEventListener("click", function () {
 
     document.getElementById("bride-name-2").textContent =
         brideName;
+const peoplePage = document.querySelector(".people-page");
 
+if (groomName === "박원빈" && brideName === "이소희") {
+    peoplePage.classList.add("special-couple");
+} else {
+    peoplePage.classList.remove("special-couple");
+}
 
+    // =========================
     // 날짜 넣기
+    // =========================
 
     const formattedDate = formatDate(weddingDate);
 
@@ -222,7 +238,9 @@ makeButton.addEventListener("click", function () {
         formattedDate;
 
 
+    // =========================
     // 요일 + 시간 넣기
+    // =========================
 
     const dayName = getDayName(weddingDate);
     const formattedTime = formatTime(weddingTime);
@@ -231,7 +249,9 @@ makeButton.addEventListener("click", function () {
         `${dayName} ${formattedTime}`;
 
 
+    // =========================
     // 사진 넣기
+    // =========================
 
     document.getElementById("groom-photo-result").src =
         URL.createObjectURL(groomPhoto);
@@ -240,14 +260,18 @@ makeButton.addEventListener("click", function () {
         URL.createObjectURL(bridePhoto);
 
 
+    // =========================
     // 제작 화면 숨기기
+    // =========================
 
     setupPage.classList.add("hidden");
 
     invitation.classList.remove("hidden");
 
 
+    // =========================
     // 첫 화면으로 이동
+    // =========================
 
     window.scrollTo({
         top: 0,
@@ -255,7 +279,9 @@ makeButton.addEventListener("click", function () {
     });
 
 
+    // =========================
     // 타이핑 애니메이션
+    // =========================
 
     startTyping();
 
@@ -292,8 +318,6 @@ function startTyping() {
     }, 120);
 
 }
-
-
 // =========================
 // 배경음악
 // =========================
@@ -324,8 +348,6 @@ musicButton.addEventListener("click", function () {
     }
 
 });
-
-
 // =========================
 // 방명록
 // =========================
@@ -343,10 +365,7 @@ const guestbookList =
     document.getElementById("guestbook-list");
 
 
-// =========================
 // 방명록 불러오기
-// =========================
-
 async function loadGuestbook() {
 
     const { data, error } = await supabaseClient
@@ -354,45 +373,34 @@ async function loadGuestbook() {
         .select("id, name, message, created_at")
         .order("created_at", { ascending: false });
 
-
     if (error) {
 
-        console.error(
-            "방명록 불러오기 오류:",
-            error
-        );
+        console.error("방명록 불러오기 오류:", error);
 
         return;
     }
 
-
     guestbookList.innerHTML = "";
-
 
     data.forEach(function (item) {
 
         const article =
             document.createElement("article");
 
-        article.className =
-            "guestbook-item";
+        article.className = "guestbook-item";
 
 
         const name =
             document.createElement("strong");
 
-        name.className =
-            "guest-name";
-
-        name.textContent =
-            item.name;
+        name.className = "guest-name";
+        name.textContent = item.name;
 
 
         const date =
             document.createElement("span");
 
-        date.className =
-            "guest-date";
+        date.className = "guest-date";
 
         date.textContent =
             new Date(item.created_at)
@@ -402,17 +410,12 @@ async function loadGuestbook() {
         const message =
             document.createElement("p");
 
-        message.className =
-            "guest-message";
-
-        message.textContent =
-            item.message;
+        message.className = "guest-message";
+        message.textContent = item.message;
 
 
         article.appendChild(name);
-
         article.appendChild(date);
-
         article.appendChild(message);
 
         guestbookList.appendChild(article);
@@ -422,74 +425,55 @@ async function loadGuestbook() {
 }
 
 
-// =========================
 // 방명록 등록
-// =========================
+guestbookSubmit.addEventListener("click", async function () {
 
-guestbookSubmit.addEventListener(
-    "click",
-    async function () {
+    const name =
+        guestNameInput.value.trim();
 
-        const name =
-            guestNameInput.value.trim();
-
-        const message =
-            guestMessageInput.value.trim();
+    const message =
+        guestMessageInput.value.trim();
 
 
-        if (!name || !message) {
+    if (!name || !message) {
 
-            alert(
-                "이름과 메시지를 모두 입력해주세요!"
-            );
+        alert("이름과 메시지를 모두 입력해주세요!");
 
-            return;
-        }
+        return;
+    }
 
 
-        guestbookSubmit.disabled = true;
+    guestbookSubmit.disabled = true;
 
 
-        const { error } =
-            await supabaseClient
-                .from("guestbook")
-                .insert({
-                    name: name,
-                    message: message
-                });
+    const { error } = await supabaseClient
+        .from("guestbook")
+        .insert({
+            name: name,
+            message: message
+        });
 
 
-        if (error) {
+    if (error) {
 
-            console.error(
-                "방명록 등록 오류:",
-                error
-            );
+        console.error("방명록 등록 오류:", error);
 
-            alert(
-                "방명록 등록에 실패했어요."
-            );
+        alert("방명록 등록에 실패했어요.");
 
-        } else {
+    } else {
 
-            guestNameInput.value = "";
+        guestNameInput.value = "";
+        guestMessageInput.value = "";
 
-            guestMessageInput.value = "";
-
-            await loadGuestbook();
-
-        }
-
-
-        guestbookSubmit.disabled = false;
+        await loadGuestbook();
 
     }
-);
 
 
-// =========================
-// 처음 페이지 열었을 때
-// 방명록 불러오기
-// =========================
+    guestbookSubmit.disabled = false;
 
+});
+
+
+// 처음 페이지 열었을 때 방명록 불러오기
 loadGuestbook();
