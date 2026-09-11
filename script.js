@@ -217,12 +217,14 @@ makeButton.addEventListener("click", function () {
 
     document.getElementById("bride-name-2").textContent =
         brideName;
-const peoplePage = document.querySelector(".people-page");
+        
+const specialVideo =
+    document.getElementById("special-couple-video");
 
 if (groomName === "박원빈" && brideName === "이소희") {
-    peoplePage.classList.add("special-couple");
+    specialVideo.style.display = "block";
 } else {
-    peoplePage.classList.remove("special-couple");
+    specialVideo.style.display = "none";
 }
 
     // =========================
