@@ -1,4 +1,18 @@
 // =========================
+// Supabase 연결
+// =========================
+
+const SUPABASE_URL =
+    "https://aknsbmazbypsziykplch.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_6pqaN-jFjW4VkfFx9DHDRg_wYp_E-2A";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+// =========================
 // 요소 가져오기
 // =========================
 
@@ -328,3 +342,132 @@ musicButton.addEventListener("click", function () {
     }
 
 });
+// =========================
+// 방명록
+// =========================
+
+const guestNameInput =
+    document.getElementById("guest-name");
+
+const guestMessageInput =
+    document.getElementById("guest-message");
+
+const guestbookSubmit =
+    document.getElementById("guestbook-submit");
+
+const guestbookList =
+    document.getElementById("guestbook-list");
+
+
+// 방명록 불러오기
+async function loadGuestbook() {
+
+    const { data, error } = await supabaseClient
+        .from("guestbook")
+        .select("id, name, message, created_at")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        console.error("방명록 불러오기 오류:", error);
+
+        return;
+    }
+
+    guestbookList.innerHTML = "";
+
+    data.forEach(function (item) {
+
+        const article =
+            document.createElement("article");
+
+        article.className = "guestbook-item";
+
+
+        const name =
+            document.createElement("strong");
+
+        name.className = "guest-name";
+        name.textContent = item.name;
+
+
+        const date =
+            document.createElement("span");
+
+        date.className = "guest-date";
+
+        date.textContent =
+            new Date(item.created_at)
+                .toLocaleDateString("ko-KR");
+
+
+        const message =
+            document.createElement("p");
+
+        message.className = "guest-message";
+        message.textContent = item.message;
+
+
+        article.appendChild(name);
+        article.appendChild(date);
+        article.appendChild(message);
+
+        guestbookList.appendChild(article);
+
+    });
+
+}
+
+
+// 방명록 등록
+guestbookSubmit.addEventListener("click", async function () {
+
+    const name =
+        guestNameInput.value.trim();
+
+    const message =
+        guestMessageInput.value.trim();
+
+
+    if (!name || !message) {
+
+        alert("이름과 메시지를 모두 입력해주세요!");
+
+        return;
+    }
+
+
+    guestbookSubmit.disabled = true;
+
+
+    const { error } = await supabaseClient
+        .from("guestbook")
+        .insert({
+            name: name,
+            message: message
+        });
+
+
+    if (error) {
+
+        console.error("방명록 등록 오류:", error);
+
+        alert("방명록 등록에 실패했어요.");
+
+    } else {
+
+        guestNameInput.value = "";
+        guestMessageInput.value = "";
+
+        await loadGuestbook();
+
+    }
+
+
+    guestbookSubmit.disabled = false;
+
+});
+
+
+// 처음 페이지 열었을 때 방명록 불러오기
+loadGuestbook();
