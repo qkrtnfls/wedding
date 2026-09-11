@@ -137,7 +137,7 @@
 
 
             <!-- 청첩장 만들기 -->
-            <button id="make-invitation">
+            <button id="make-invitation" type="button">
                 청첩장 만들기
             </button>
 
@@ -152,6 +152,7 @@
     ========================== -->
 
     <main id="invitation" class="hidden">
+      
 
       <!-- 배경음악 버튼 -->
 
@@ -385,15 +386,22 @@
 
             </div>
 
-        </section>
+                </section>
+
+        <div class="share-button-area">
+            <button id="share-button" type="button">
+                청첩장 공유하기
+            </button>
+        </div>
+
     </main>
 
 
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 
 </body>
 </html>
-```
+
