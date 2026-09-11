@@ -1,4 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
 /* =========================
    기본 설정
 ========================= */
@@ -14,10 +15,11 @@ html {
 }
 
 body {
-    font-family: "Pretendard", sans-serif;  
+    font-family: "Pretendard", sans-serif;
     color: #333;
     background: #fff;
 }
+
 
 
 /* =========================
@@ -71,7 +73,9 @@ body {
 }
 
 
-/* 입력창 */
+/* =========================
+   입력창
+========================= */
 
 .input-area {
     display: flex;
@@ -87,11 +91,49 @@ body {
 .input-area input[type="text"] {
     width: 100%;
     padding: 14px;
+
     border: 1px solid #ddd;
     border-radius: 8px;
+
     margin-bottom: 18px;
 
     font-size: 14px;
+}
+
+
+/* =========================
+   날짜 / 시간 입력
+========================= */
+
+.date-time-area {
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+
+    margin-bottom: 20px;
+}
+
+.date-time-area label {
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.date-time-area input {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background: #fff;
+
+    font-size: 14px;
+    color: #333;
+
+    margin-bottom: 15px;
 }
 
 
@@ -181,6 +223,7 @@ body {
     color: white;
 
     font-size: 15px;
+
     cursor: pointer;
 }
 
@@ -192,6 +235,10 @@ body {
 /* =========================
    메인 청첩장
 ========================= */
+
+#invitation {
+    width: 100%;
+}
 
 .main-page {
     background: #faf8f5;
@@ -215,12 +262,15 @@ body {
 }
 
 
-/* 커플 사진 */
+/* =========================
+   커플 사진
+========================= */
 
 .couple-photos {
     display: flex;
     justify-content: center;
     align-items: center;
+
     gap: 12px;
 
     margin-bottom: 25px;
@@ -229,7 +279,9 @@ body {
 .couple-photos img {
     width: 130px;
     height: 170px;
+
     object-fit: cover;
+
     border-radius: 12px;
 }
 
@@ -238,7 +290,9 @@ body {
 }
 
 
-/* 이름 */
+/* =========================
+   이름
+========================= */
 
 .couple-name {
     font-size: 18px;
@@ -249,27 +303,39 @@ body {
 }
 
 
-/* 날짜 */
+/* =========================
+   날짜
+========================= */
 
 .date {
     margin-top: 15px;
+
     font-size: 13px;
     letter-spacing: 2px;
 }
 
-/* 장소 */
+
+/* =========================
+   장소
+========================= */
 
 .venue {
     margin-top: 8px;
+
     font-size: 13px;
     color: #666;
+
     letter-spacing: 1px;
 }
 
-/* 스크롤 안내 */
+
+/* =========================
+   스크롤 안내
+========================= */
 
 .scroll-guide {
     position: absolute;
+
     bottom: 30px;
     left: 50%;
 
@@ -281,7 +347,9 @@ body {
 
 .scroll-guide span {
     display: block;
+
     margin-top: 8px;
+
     font-size: 18px;
 }
 
@@ -306,7 +374,6 @@ body {
     background: #faf8f5;
 }
 
-
 .content {
     width: 90%;
     max-width: 500px;
@@ -330,6 +397,7 @@ body {
 
 .message {
     margin-top: 35px;
+
     line-height: 2;
     color: #666;
 }
@@ -337,6 +405,7 @@ body {
 .big-message {
     font-size: 24px;
     line-height: 1.8;
+
     margin-bottom: 30px;
 }
 
@@ -349,37 +418,8 @@ body {
     line-height: 2;
     color: #666;
 }
-/* =========================
-   날짜 / 시간 입력
-========================= */
 
-.date-time-area {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    margin-bottom: 20px;
-}
 
-.date-time-area label {
-    font-size: 13px;
-    margin-bottom: 7px;
-}
-
-.date-time-area input {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-
-    border: 1px solid #ddd;
-    border-radius: 8px;
-
-    background: #fff;
-
-    font-size: 14px;
-    color: #333;
-
-    margin-bottom: 15px;
-}
 /* =========================
    배경음악 버튼
 ========================= */
@@ -415,6 +455,8 @@ body {
 #music-button:hover {
     background: #fff;
 }
+
+
 /* =========================
    방명록
 ========================= */
@@ -422,7 +464,9 @@ body {
 .guestbook-page {
     height: auto;
     min-height: 100vh;
+
     padding: 80px 0;
+
     background: #fff;
 }
 
@@ -438,11 +482,15 @@ body {
 .guestbook-form input,
 .guestbook-form textarea {
     width: 100%;
+
     border: 1px solid #ddd;
     border-radius: 8px;
+
     padding: 14px;
+
     font-family: inherit;
     font-size: 14px;
+
     outline: none;
 }
 
@@ -452,7 +500,9 @@ body {
 
 .guestbook-form textarea {
     height: 110px;
+
     resize: none;
+
     line-height: 1.6;
 }
 
@@ -461,8 +511,14 @@ body {
     border-color: #aaa;
 }
 
+
+/* =========================
+   방명록 등록 버튼
+========================= */
+
 #guestbook-submit {
     width: 100%;
+
     margin-top: 10px;
     padding: 14px;
 
@@ -474,6 +530,7 @@ body {
 
     font-family: inherit;
     font-size: 14px;
+
     cursor: pointer;
 }
 
@@ -481,13 +538,20 @@ body {
     opacity: 0.5;
 }
 
+
+/* =========================
+   방명록 목록
+========================= */
+
 #guestbook-list {
     margin-top: 40px;
+
     text-align: left;
 }
 
 .guestbook-item {
     padding: 18px 0;
+
     border-bottom: 1px solid #eee;
 }
 
@@ -497,25 +561,90 @@ body {
 
 .guest-date {
     margin-left: 8px;
+
     font-size: 11px;
     color: #999;
 }
 
 .guest-message {
     margin-top: 8px;
+
     line-height: 1.7;
+
     font-size: 14px;
     color: #555;
+
     white-space: pre-wrap;
     word-break: break-word;
 }
-/* 박원빈 & 이소희 전용 영상 */
+
+
+/* =========================
+   박원빈 & 이소희 전용 영상
+========================= */
 
 .special-couple-video {
     display: none;
+
     width: 90%;
     max-width: 500px;
+
     height: auto;
+
     margin: 30px auto 0;
+
     border-radius: 12px;
+}
+
+
+/* =========================
+   청첩장 공유 버튼
+========================= */
+
+.share-button-area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#share-button {
+    display: block;
+
+    width: 90%;
+    max-width: 500px;
+
+    margin: 40px auto 60px;
+
+    padding: 16px 24px;
+
+    border: 1px solid #b8aaa0;
+    border-radius: 2px;
+
+    background: #faf8f5;
+    color: #4a403a;
+
+    font-family: inherit;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    letter-spacing: 2px;
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+#share-button:hover {
+    background: #4a403a;
+    color: #fff;
+    border-color: #4a403a;
+}
+
+#share-button:active {
+    transform: scale(0.98);
 }
