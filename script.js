@@ -467,7 +467,92 @@ guestbookSubmit.addEventListener("click", async function () {
     guestbookSubmit.disabled = false;
 
 });
+/* =========================
+   방명록
+========================= */
 
+.guestbook-page {
+    height: auto;
+    min-height: 100vh;
+    padding: 80px 0;
+    background: #fff;
+}
+
+.guestbook-content {
+    max-width: 500px;
+}
+
+.guestbook-form {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.guestbook-form input,
+.guestbook-form textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.guestbook-form input {
+    margin-bottom: 10px;
+}
+
+.guestbook-form textarea {
+    height: 110px;
+    resize: none;
+    line-height: 1.6;
+}
+
+#guestbook-submit {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#guestbook-submit:disabled {
+    opacity: 0.5;
+}
+
+#guestbook-list {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.guestbook-item {
+    padding: 18px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.guest-name {
+    font-size: 14px;
+}
+
+.guest-date {
+    margin-left: 8px;
+    font-size: 11px;
+    color: #999;
+}
+
+.guest-message {
+    margin-top: 8px;
+    line-height: 1.7;
+    font-size: 14px;
+    color: #555;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
 
 // 처음 페이지 열었을 때 방명록 불러오기
 loadGuestbook();
