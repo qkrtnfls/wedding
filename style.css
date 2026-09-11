@@ -509,10 +509,13 @@ body {
     white-space: pre-wrap;
     word-break: break-word;
 }
-/* 박원빈 & 이소희 전용 배경 */
-.people-page.special-couple {
-    background-image: url("wbsh.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* 박원빈 & 이소희 전용 영상 */
+
+.special-couple-video {
+    display: none;
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    margin: 30px auto 0;
+    border-radius: 12px;
 }
